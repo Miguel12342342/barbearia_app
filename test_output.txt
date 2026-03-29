@@ -1,0 +1,121 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 91.0.0 (98.0.0 available)
+  analyzer 8.4.1 (12.0.0 available)
+  characters 1.4.0 (1.4.1 available)
+  matcher 0.12.17 (0.12.19 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.17.0 (1.18.2 available)
+  test 1.26.3 (1.31.0 available)
+  test_api 0.7.7 (0.7.11 available)
+  test_core 0.6.12 (0.6.17 available)
+  vector_math 2.2.0 (2.3.0 available)
+Got dependencies!
+10 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/migue/Desktop/piloto/piloto2/barbearia_appzin/test/features/scheduling/presentation/bloc/booking_bloc_test.dart
+00:00 +0: BookingBloc BDD Given a valid appointment, When BookAppointmentEvent is added, Then it should emit [Loading, Success]
+00:00 +0 -1: BookingBloc BDD Given a valid appointment, When BookAppointmentEvent is added, Then it should emit [Loading, Success] [E]
+  Bad state: A test tried to use `any` or `captureAny` on a parameter of type `Appointment`, but
+  registerFallbackValue was not previously called to register a fallback value for `Appointment`.
+  
+  To fix, do:
+  
+  ```
+  void main() {
+    setUpAll(() {
+      registerFallbackValue(/* create a dummy instance of `Appointment` */);
+    });
+  }
+  ```
+  
+  This instance of `Appointment` will only be passed around, but never be interacted with.
+  Therefore, if `Appointment` is a function, it does not have to return a valid object and
+  could throw unconditionally.
+  If you cannot easily create an instance of `Appointment`, consider defining a `Fake`:
+  
+  ```
+  class MyTypeFake extends Fake implements MyType {}
+  
+  void main() {
+    setUpAll(() {
+      registerFallbackValue(MyTypeFake());
+    });
+  }
+  ```
+  
+  Fallbacks are required because mocktail has to know of a valid `Appointment` to prevent
+  TypeErrors from being thrown in Dart's sound null safe mode, while still
+  providing a convenient syntax.
+  
+  package:mocktail/src/_register_matcher.dart 49:5                         _getFallbackValue
+  package:mocktail/src/_register_matcher.dart 160:25                       _registerMatcher
+  package:mocktail/src/_register_matcher.dart 104:10                       any
+  test\features\scheduling\presentation\bloc\booking_bloc_test.dart 49:40  main.<fn>.<fn>.<fn>
+  package:mocktail/src/mocktail.dart 211:9                                 when.<fn>
+  test\features\scheduling\presentation\bloc\booking_bloc_test.dart 49:13  main.<fn>.<fn>
+  package:bloc_test/src/bloc_test.dart 201:25                              testBloc.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                               _Completer.completeError
+  package:bloc_test/src/bloc_test.dart 255:43                              _runZonedGuarded.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                               _CustomZone.registerBinaryCallback
+  package:bloc_test/src/bloc_test.dart 252:5                               _runZonedGuarded.<fn>
+  dart:async                                                               runZonedGuarded
+  package:bloc_test/src/bloc_test.dart 251:3                               _runZonedGuarded
+  package:bloc_test/src/bloc_test.dart 198:11                              testBloc
+  package:bloc_test/src/bloc_test.dart 156:13                              blocTest.<fn>
+  
+00:00 +0 -1: BookingBloc BDD Given the user token is expired (Unauthorized), When BookAppointmentEvent is added, Then it should emit [Loading, Failure]
+00:00 +0 -2: BookingBloc BDD Given the user token is expired (Unauthorized), When BookAppointmentEvent is added, Then it should emit [Loading, Failure] [E]
+  Bad state: A test tried to use `any` or `captureAny` on a parameter of type `Appointment`, but
+  registerFallbackValue was not previously called to register a fallback value for `Appointment`.
+  
+  To fix, do:
+  
+  ```
+  void main() {
+    setUpAll(() {
+      registerFallbackValue(/* create a dummy instance of `Appointment` */);
+    });
+  }
+  ```
+  
+  This instance of `Appointment` will only be passed around, but never be interacted with.
+  Therefore, if `Appointment` is a function, it does not have to return a valid object and
+  could throw unconditionally.
+  If you cannot easily create an instance of `Appointment`, consider defining a `Fake`:
+  
+  ```
+  class MyTypeFake extends Fake implements MyType {}
+  
+  void main() {
+    setUpAll(() {
+      registerFallbackValue(MyTypeFake());
+    });
+  }
+  ```
+  
+  Fallbacks are required because mocktail has to know of a valid `Appointment` to prevent
+  TypeErrors from being thrown in Dart's sound null safe mode, while still
+  providing a convenient syntax.
+  
+  package:mocktail/src/_register_matcher.dart 49:5                         _getFallbackValue
+  package:mocktail/src/_register_matcher.dart 160:25                       _registerMatcher
+  package:mocktail/src/_register_matcher.dart 104:10                       any
+  test\features\scheduling\presentation\bloc\booking_bloc_test.dart 68:40  main.<fn>.<fn>.<fn>
+  package:mocktail/src/mocktail.dart 211:9                                 when.<fn>
+  test\features\scheduling\presentation\bloc\booking_bloc_test.dart 68:13  main.<fn>.<fn>
+  package:bloc_test/src/bloc_test.dart 201:25                              testBloc.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                               _Completer.completeError
+  package:bloc_test/src/bloc_test.dart 255:43                              _runZonedGuarded.<fn>
+  ===== asynchronous gap ===========================
+  dart:async                                                               _CustomZone.registerBinaryCallback
+  package:bloc_test/src/bloc_test.dart 252:5                               _runZonedGuarded.<fn>
+  dart:async                                                               runZonedGuarded
+  package:bloc_test/src/bloc_test.dart 251:3                               _runZonedGuarded
+  package:bloc_test/src/bloc_test.dart 198:11                              testBloc
+  package:bloc_test/src/bloc_test.dart 156:13                              blocTest.<fn>
+  
+00:00 +0 -2: Some tests failed.
