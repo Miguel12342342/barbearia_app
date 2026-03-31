@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/atoms/gold_primary_button.dart';
 import '../../../../core/presentation/widgets/atoms/app_divider_with_text.dart';
 import '../../../../core/presentation/widgets/molecules/social_auth_button.dart';
+import '../cubit/auth_cubit.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -37,6 +38,40 @@ class _AuthPageState extends State<AuthPage>
 
   @override
   Widget build(BuildContext context) {
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Erro inesperado.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          final isLoading = state.status == AuthStatus.loading;
+          return Stack(
+            children: [
+              _buildScaffold(context, isLoading),
+              if (isLoading)
+                const Opacity(
+                  opacity: 0.6,
+                  child: ModalBarrier(dismissible: false, color: Colors.black),
+                ),
+              if (isLoading)
+                const Center(
+                  child: CircularProgressIndicator(color: AppColors.primaryGold),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, bool _) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -227,7 +262,7 @@ class _AuthPageState extends State<AuthPage>
               size: 18,
               color: AppColors.background,
             ),
-            onPressed: () {},
+            onPressed: () => _onRegister(context),
           ),
           const SizedBox(height: 24),
         ],
@@ -335,10 +370,17 @@ class _AuthPageState extends State<AuthPage>
   }
 
   void _onLogin() {
-    // Placeholder: replace with AuthBloc event when firebase_auth is wired
-    if (_emailController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty) {
-      context.go('/home');
-    }
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) return;
+    context.read<AuthCubit>().signInWithEmail(email, password);
+  }
+
+  void _onRegister(BuildContext context) {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (name.isEmpty || email.isEmpty || password.isEmpty) return;
+    context.read<AuthCubit>().registerWithEmail(name, email, password);
   }
 }

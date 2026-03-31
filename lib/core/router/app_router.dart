@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
@@ -7,9 +9,35 @@ import '../../features/scheduling/presentation/pages/booking_page.dart';
 import '../../features/loyalty/presentation/pages/loyalty_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 
+// Bridges Firebase auth stream into a GoRouter-compatible Listenable
+class _AuthRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<User?> _sub;
+
+  _AuthRefreshStream(Stream<User?> stream) {
+    notifyListeners();
+    _sub = stream.listen((_) => notifyListeners());
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
+
 final appRouter = GoRouter(
   initialLocation: '/home',
   debugLogDiagnostics: false,
+  refreshListenable:
+      _AuthRefreshStream(FirebaseAuth.instance.authStateChanges()),
+  redirect: (context, state) {
+    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    final isOnAuth = state.matchedLocation == '/auth';
+
+    if (!isLoggedIn && !isOnAuth) return '/auth';
+    if (isLoggedIn && isOnAuth) return '/home';
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/auth',

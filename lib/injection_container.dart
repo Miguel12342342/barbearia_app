@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 
 // ── Scheduling ──────────────────────────────────────────────────────────────
 import 'features/scheduling/data/datasources/i_appointment_datasource.dart';
@@ -43,6 +46,10 @@ import 'core/locale/locale_cubit.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // ── Auth ───────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerFactory(() => AuthCubit(auth: sl()));
+
   // ── Scheduling ─────────────────────────────────────────────────────────────
 
   sl.registerFactory(
@@ -68,24 +75,12 @@ Future<void> init() async {
     () => AppointmentRepositoryImpl(sl()),
   );
 
-  bool isFirebaseRunning = false;
-  try {
-    Firebase.app();
-    isFirebaseRunning = true;
-  } catch (_) {}
-
-  if (isFirebaseRunning) {
-    sl.registerLazySingleton<IAppointmentDataSource>(
-      () => FirebaseAppointmentDataSource(sl()),
-    );
-    sl.registerLazySingleton<FirebaseFirestore>(
-      () => FirebaseFirestore.instance,
-    );
-  } else {
-    sl.registerLazySingleton<IAppointmentDataSource>(
-      () => MockAppointmentDataSource(),
-    );
-  }
+  sl.registerLazySingleton<FirebaseFirestore>(
+    () => FirebaseFirestore.instance,
+  );
+  sl.registerLazySingleton<IAppointmentDataSource>(
+    () => FirebaseAppointmentDataSource(sl()),
+  );
 
   // ── Barber ─────────────────────────────────────────────────────────────────
 
