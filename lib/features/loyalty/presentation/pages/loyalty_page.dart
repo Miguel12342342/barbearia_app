@@ -145,6 +145,10 @@ class _LoyaltyPageState extends State<LoyaltyPage> {
   Widget _buildStatusCard(
       BuildContext context, int cuts, int total, double progress, int percent) {
     final l10n = AppLocalizations.of(context);
+    final authState = context.read<AuthCubit>().state;
+    final firstName = authState.displayName?.split(' ').first ??
+        authState.email?.split('@').first ??
+        '';
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -175,9 +179,9 @@ class _LoyaltyPageState extends State<LoyaltyPage> {
                     l10n.almostThere,
                     style: const TextStyle(color: AppColors.textLight, fontSize: 18),
                   ),
-                  const Text(
-                    'Arthur',
-                    style: TextStyle(
+                  Text(
+                    firstName,
+                    style: const TextStyle(
                       color: AppColors.textLight,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
