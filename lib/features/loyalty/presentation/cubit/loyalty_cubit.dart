@@ -15,8 +15,10 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
         super(const LoyaltyState());
 
   Future<void> load(String userId) async {
+    if (isClosed) return;
     emit(state.copyWith(status: LoyaltyStatus.loading));
     final result = await _getLoyaltyProgram(userId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(state.copyWith(
         status: LoyaltyStatus.error,
@@ -30,8 +32,10 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
   }
 
   Future<void> redeemReward(String userId) async {
+    if (isClosed) return;
     emit(state.copyWith(status: LoyaltyStatus.redeeming));
     final result = await _repository.redeemReward(userId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(state.copyWith(
         status: LoyaltyStatus.error,

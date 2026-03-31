@@ -16,8 +16,10 @@ class ProfileCubit extends Cubit<ProfileState> {
         super(const ProfileState());
 
   Future<void> load(String userId) async {
+    if (isClosed) return;
     emit(state.copyWith(status: ProfileStatus.loading));
     final result = await _getClientProfile(userId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(state.copyWith(
         status: ProfileStatus.error,
@@ -34,8 +36,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     String userId,
     StylePreferences preferences,
   ) async {
+    if (isClosed) return false;
     emit(state.copyWith(status: ProfileStatus.saving));
     final result = await _repository.updateStylePreferences(userId, preferences);
+    if (isClosed) return false;
     return result.fold(
       (failure) {
         emit(state.copyWith(
@@ -59,12 +63,14 @@ class ProfileCubit extends Cubit<ProfileState> {
     required String name,
     required String email,
   }) async {
+    if (isClosed) return false;
     emit(state.copyWith(status: ProfileStatus.saving));
     final result = await _repository.updatePersonalData(
       userId,
       name: name,
       email: email,
     );
+    if (isClosed) return false;
     return result.fold(
       (failure) {
         emit(state.copyWith(

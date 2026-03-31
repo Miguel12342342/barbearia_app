@@ -18,10 +18,13 @@ class BookingFormCubit extends Cubit<BookingFormState> {
         super(const BookingFormState());
 
   Future<void> loadFormData() async {
+    if (isClosed) return;
     emit(state.copyWith(status: BookingFormStatus.loadingData));
 
     final servicesResult = await _getServices(NoParams());
     final barbersResult = await _getBarbers(NoParams());
+
+    if (isClosed) return;
 
     servicesResult.fold(
       (failure) => emit(state.copyWith(
@@ -29,6 +32,7 @@ class BookingFormCubit extends Cubit<BookingFormState> {
         errorMessage: failure.message,
       )),
       (services) {
+        if (isClosed) return;
         barbersResult.fold(
           (failure) => emit(state.copyWith(
             status: BookingFormStatus.error,
@@ -44,16 +48,23 @@ class BookingFormCubit extends Cubit<BookingFormState> {
     );
   }
 
-  void selectService(Service service) =>
-      emit(state.copyWith(selectedService: service));
+  void selectService(Service service) {
+    if (!isClosed) emit(state.copyWith(selectedService: service));
+  }
 
-  void selectBarber(Barber barber) =>
-      emit(state.copyWith(selectedBarber: barber));
+  void selectBarber(Barber barber) {
+    if (!isClosed) emit(state.copyWith(selectedBarber: barber));
+  }
 
-  void selectDate(DateTime date) =>
-      emit(state.copyWith(selectedDate: date, clearSelectedTime: true));
+  void selectDate(DateTime date) {
+    if (!isClosed) emit(state.copyWith(selectedDate: date, clearSelectedTime: true));
+  }
 
-  void selectTime(String time) => emit(state.copyWith(selectedTime: time));
+  void selectTime(String time) {
+    if (!isClosed) emit(state.copyWith(selectedTime: time));
+  }
 
-  void reset() => emit(const BookingFormState());
+  void reset() {
+    if (!isClosed) emit(const BookingFormState());
+  }
 }
