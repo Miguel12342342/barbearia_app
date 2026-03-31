@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/locale/app_localizations.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/locale/locale_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/atoms/gold_progress_bar.dart';
@@ -21,7 +20,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  static const _userId = AppConstants.kDevUserId;
+  String get _userId =>
+      context.read<AuthCubit>().state.userId ?? '';
 
   @override
   void initState() {
@@ -962,7 +962,8 @@ class _SettingsCardState extends State<_SettingsCard> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              context.go('/auth');
+              context.read<AuthCubit>().signOut();
+              // GoRouter redirect handles navigation to /auth automatically
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,

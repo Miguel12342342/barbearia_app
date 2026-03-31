@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../injection_container.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../scheduling/presentation/cubit/booking_form_cubit.dart';
 import '../../../scheduling/presentation/bloc/booking_bloc.dart';
 
@@ -35,7 +36,14 @@ class ShellPage extends StatelessWidget {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: AppColors.background,
-        drawer: const _AppDrawer(userName: 'Arthur'), // TODO: real user name from auth
+        drawer: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, authState) {
+            final name = authState.displayName?.split(' ').first ??
+                authState.email?.split('@').first ??
+                '';
+            return _AppDrawer(userName: name);
+          },
+        ),
         body: child,
         floatingActionButton: currentIndex == 0 || currentIndex == 1
             ? FloatingActionButton(

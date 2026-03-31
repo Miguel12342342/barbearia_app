@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/locale/app_localizations.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../loyalty/domain/entities/loyalty_program.dart';
 import '../../../../core/presentation/widgets/atoms/gold_progress_bar.dart';
@@ -20,7 +20,8 @@ class LoyaltyPage extends StatefulWidget {
 }
 
 class _LoyaltyPageState extends State<LoyaltyPage> {
-  static const _userId = AppConstants.kDevUserId;
+  String get _userId =>
+      context.read<AuthCubit>().state.userId ?? '';
 
   @override
   void initState() {
@@ -406,7 +407,7 @@ class _LoyaltyPageState extends State<LoyaltyPage> {
                 ? null
                 : () => context
                     .read<LoyaltyCubit>()
-                    .redeemReward(_userId),
+                    .redeemReward(context.read<AuthCubit>().state.userId ?? ''),
             child: Text(
               isRedeeming ? '...' : AppLocalizations.of(context).redeem,
               style: const TextStyle(

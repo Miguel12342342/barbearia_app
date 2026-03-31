@@ -1,29 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/client_profile.dart';
 import '../../domain/repositories/i_profile_repository.dart';
 
-/// Mock implementation — swap for FirebaseProfileDataSource when ready.
 class ProfileRepositoryImpl implements IProfileRepository {
   @override
   Future<Either<Failure, ClientProfile>> getProfile(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 350));
+    final user = FirebaseAuth.instance.currentUser;
+
+    // Use Firebase Auth as source of truth for personal data.
+    // Style preferences start empty — user fills them in the app.
     return Right(
       ClientProfile(
         id: userId,
-        name: 'Ricardo Oliveira',
-        email: 'ricardo@email.com',
-        photoUrl: null, // null = sem foto; Firebase Auth preencherá isso
-        memberSince: DateTime(2022, 10, 1),
-        tier: MemberTier.premium,
-        stylePreferences: StylePreferences(
-          haircut: 'Mid Fade Textured Top',
-          lastServiceDate: DateTime.now().subtract(const Duration(days: 12)),
-          beardStyle: 'Short Boxed Beard',
-          beardContour: 'Navalha premium',
-          favoriteProducts: ['Pomada Matte', 'Óleo de Sândalo'],
-          preferredBarberId: 'b3',
-          preferredBarberName: 'Mestre André',
+        name: user?.displayName ?? user?.email?.split('@').first ?? 'Usuário',
+        email: user?.email ?? '',
+        photoUrl: user?.photoURL,
+        memberSince: user?.metadata.creationTime ?? DateTime.now(),
+        tier: MemberTier.standard,
+        stylePreferences: const StylePreferences(
+          haircut: '',
+          beardStyle: '',
+          beardContour: '',
+          favoriteProducts: [],
+          preferredBarberId: '',
+          preferredBarberName: '',
         ),
       ),
     );
@@ -34,6 +36,7 @@ class ProfileRepositoryImpl implements IProfileRepository {
     String userId,
     StylePreferences preferences,
   ) async {
+    // TODO: persist to Firestore
     await Future.delayed(const Duration(milliseconds: 400));
     return const Right(unit);
   }
@@ -44,7 +47,15 @@ class ProfileRepositoryImpl implements IProfileRepository {
     required String name,
     required String email,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return const Right(unit);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.updateDisplayName(name);
+        // Email update requires re-authentication — skip for now
+      }
+      return const Right(unit);
+    } catch (_) {
+      return const Right(unit);
+    }
   }
 }

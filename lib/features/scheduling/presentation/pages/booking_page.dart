@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/locale/app_localizations.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/atoms/section_label.dart';
 import '../../../../injection_container.dart';
@@ -81,7 +82,7 @@ class _BookingView extends StatelessWidget {
 
     final appointment = Appointment(
       id: UniqueKey().toString(),
-      userId: AppConstants.kDevUserId,
+      userId: context.read<AuthCubit>().state.userId ?? '',
       serviceId: formState.selectedService!.id,
       barberId: formState.selectedBarber!.id,
       serviceName: formState.selectedService!.name,
