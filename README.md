@@ -174,4 +174,4 @@ service cloud.firestore {
 
 ---
 
-<p align="center">Feito com Flutter ❤️</p>
+<p align="center">Feito por Miguel Angelo🌹</p>
