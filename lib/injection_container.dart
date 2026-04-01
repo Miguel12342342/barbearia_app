@@ -102,7 +102,8 @@ Future<void> init() async {
     ),
   );
   sl.registerLazySingleton(() => GetLoyaltyProgram(sl()));
-  sl.registerLazySingleton<ILoyaltyRepository>(() => LoyaltyRepositoryImpl());
+  sl.registerLazySingleton<ILoyaltyRepository>(
+      () => LoyaltyRepositoryImpl(sl()));
 
   // ── Profile ────────────────────────────────────────────────────────────────
 

@@ -1,50 +1,62 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/loyalty_program.dart';
 import '../../domain/repositories/i_loyalty_repository.dart';
 
-/// Mock implementation — swap for FirebaseLoyaltyDataSource when ready.
 class LoyaltyRepositoryImpl implements ILoyaltyRepository {
+  final FirebaseFirestore _firestore;
+
+  LoyaltyRepositoryImpl(this._firestore);
+
   @override
   Future<Either<Failure, LoyaltyProgram>> getLoyaltyProgram(
       String userId) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return Right(
-      LoyaltyProgram(
-        userId: userId,
-        currentCuts: 9,
-        cutsToNextReward: 10,
-        nextRewardDescription: 'Master Grooming gratuito',
-        vipBenefits: [
-          'Prioridade no agendamento',
-          '15% de desconto em produtos de home care',
-          'Acesso a horários exclusivos',
-        ],
-        memberQRCode: 'CB-$userId-VIP-2024',
-        serviceHistory: [
-          ServiceHistoryEntry(
-            serviceName: 'Corte Degradê + Barba',
-            barberName: 'Ricardo Silva',
-            date: DateTime(2024, 10, 15),
-          ),
-          ServiceHistoryEntry(
-            serviceName: 'Ajuste de Barba',
-            barberName: 'Marcus V.',
-            date: DateTime(2024, 9, 28),
-          ),
-          ServiceHistoryEntry(
-            serviceName: 'Corte Clássico',
-            barberName: 'Ricardo Silva',
-            date: DateTime(2024, 9, 5),
-          ),
-          ServiceHistoryEntry(
-            serviceName: 'Corte + Lavagem',
-            barberName: 'Marcus V.',
-            date: DateTime(2024, 8, 12),
-          ),
-        ],
-      ),
-    );
+    try {
+      final snap = await _firestore
+          .collection('appointments')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      final activeDocs =
+          snap.docs.where((d) => d['status'] != 'canceled').toList();
+
+      final currentCuts = activeDocs.length;
+
+      final history = activeDocs
+          .map((d) {
+            final data = d.data();
+            final ts = data['date'] as Timestamp?;
+            return ServiceHistoryEntry(
+              serviceName: data['serviceName'] as String? ?? '',
+              barberName: data['barberName'] as String? ?? '',
+              date: ts?.toDate() ?? DateTime.now(),
+            );
+          })
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+
+      return Right(
+        LoyaltyProgram(
+          userId: userId,
+          currentCuts: currentCuts,
+          cutsToNextReward: 10,
+          nextRewardDescription: 'Master Grooming gratuito',
+          vipBenefits: const [
+            'Prioridade no agendamento',
+            '15% de desconto em produtos de home care',
+            'Acesso a horários exclusivos',
+          ],
+          memberQRCode: 'CB-$userId',
+          serviceHistory: history,
+        ),
+      );
+    } on FirebaseException catch (e) {
+      return Left(
+          ServerFailure(e.message ?? 'Erro ao carregar programa de fidelidade'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
