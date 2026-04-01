@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../injection_container.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../../../scheduling/presentation/cubit/booking_form_cubit.dart';
+import '../../../loyalty/presentation/cubit/loyalty_cubit.dart';
 import '../../../scheduling/presentation/bloc/booking_bloc.dart';
+import '../../../scheduling/presentation/bloc/booking_event.dart';
+import '../../../scheduling/presentation/cubit/booking_form_cubit.dart';
 
 class ShellPage extends StatelessWidget {
   final Widget child;
@@ -25,47 +27,78 @@ class ShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = _locationToIndex(location);
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<BookingFormCubit>()),
         BlocProvider(create: (_) => sl<BookingBloc>()),
       ],
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: AppColors.background,
-        drawer: BlocBuilder<AuthCubit, AuthState>(
-          builder: (context, authState) {
-            final name = authState.displayName?.split(' ').first ??
-                authState.email?.split('@').first ??
-                '';
-            return _AppDrawer(userName: name);
-          },
-        ),
-        body: child,
-        floatingActionButton: currentIndex == 0 || currentIndex == 1
-            ? FloatingActionButton(
-                onPressed: () => context.go('/booking'),
-                backgroundColor: AppColors.primaryGold,
-                foregroundColor: AppColors.background,
-                elevation: 6,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(Icons.add_rounded, size: 30),
-              )
-            : null,
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: _BottomNav(
-          currentIndex: currentIndex,
-          onTap: (index) => context.go(_routes[index]),
-        ),
+      child: _ShellScaffold(child: child),
+    );
+  }
+}
+
+// ── Shell Scaffold (StatefulWidget to trigger data loading once) ───────────────
+
+class _ShellScaffold extends StatefulWidget {
+  final Widget child;
+  const _ShellScaffold({required this.child});
+
+  @override
+  State<_ShellScaffold> createState() => _ShellScaffoldState();
+}
+
+class _ShellScaffoldState extends State<_ShellScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final userId = context.read<AuthCubit>().state.userId ?? '';
+      if (userId.isEmpty) return;
+      context.read<BookingBloc>().add(LoadAppointmentsEvent(userId));
+      context.read<LoyaltyCubit>().load(userId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.toString();
+    final currentIndex = ShellPage._locationToIndex(location);
+
+    return Scaffold(
+      key: ShellPage.scaffoldKey,
+      backgroundColor: AppColors.background,
+      drawer: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, authState) {
+          final name = authState.displayName?.split(' ').first ??
+              authState.email?.split('@').first ??
+              '';
+          return _AppDrawer(userName: name);
+        },
+      ),
+      body: widget.child,
+      floatingActionButton: currentIndex == 0 || currentIndex == 1
+          ? FloatingActionButton(
+              onPressed: () => context.go('/booking'),
+              backgroundColor: AppColors.primaryGold,
+              foregroundColor: AppColors.background,
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.add_rounded, size: 30),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: _BottomNav(
+        currentIndex: currentIndex,
+        onTap: (index) => context.go(ShellPage._routes[index]),
       ),
     );
   }
 }
+
+// ── Drawer ────────────────────────────────────────────────────────────────────
 
 class _AppDrawer extends StatelessWidget {
   final String userName;
@@ -173,6 +206,8 @@ class _DrawerItem extends StatelessWidget {
     );
   }
 }
+
+// ── Bottom Nav ────────────────────────────────────────────────────────────────
 
 class _BottomNav extends StatelessWidget {
   final int currentIndex;
