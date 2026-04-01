@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/locale/app_localizations.dart';
+import '../../../../core/presentation/widgets/organisms/brand_app_bar.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../loyalty/domain/entities/loyalty_program.dart';
@@ -33,23 +34,8 @@ class _LoyaltyPageState extends State<LoyaltyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded, color: AppColors.primaryGold),
-          onPressed: () => ShellPage.scaffoldKey.currentState?.openDrawer(),
-        ),
-        title: const Text(
-          'Corte & Barba',
-          style: TextStyle(
-            color: AppColors.primaryGold,
-            fontWeight: FontWeight.w900,
-            fontSize: 20,
-            letterSpacing: -0.5,
-          ),
-        ),
-        centerTitle: true,
+      appBar: BrandAppBar(
+        onMenuTap: () => ShellPage.scaffoldKey.currentState?.openDrawer(),
       ),
       body: SafeArea(
         child: BlocBuilder<LoyaltyCubit, LoyaltyState>(

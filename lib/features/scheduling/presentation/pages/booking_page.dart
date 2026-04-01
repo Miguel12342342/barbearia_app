@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/locale/app_localizations.dart';
+import '../../../../core/presentation/widgets/organisms/brand_app_bar.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/atoms/section_label.dart';
@@ -100,22 +101,8 @@ class _BookingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded, color: AppColors.primaryGold),
-          onPressed: () => ShellPage.scaffoldKey.currentState?.openDrawer(),
-        ),
-        title: const Text(
-          'Corte & Barba',
-          style: TextStyle(
-            color: AppColors.primaryGold,
-            fontWeight: FontWeight.w900,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
+      appBar: BrandAppBar(
+        onMenuTap: () => ShellPage.scaffoldKey.currentState?.openDrawer(),
       ),
       body: BlocListener<BookingBloc, BookingState>(
         listener: (context, state) {
