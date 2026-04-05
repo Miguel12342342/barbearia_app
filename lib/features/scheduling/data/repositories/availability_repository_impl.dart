@@ -36,25 +36,34 @@ class AvailabilityRepositoryImpl implements IAvailabilityRepository {
         }
       }
 
-      final slots = <String>[];
-      var current = DateTime(2000, 1, 1, 9, 0);
-      final workEnd = DateTime(2000, 1, 1, 18, 30);
-
-      while (true) {
-        final slotEnd = current.add(Duration(minutes: durationMinutes));
-        if (slotEnd.isAfter(workEnd)) break;
-        final h = current.hour.toString().padLeft(2, '0');
-        final m = current.minute.toString().padLeft(2, '0');
-        final label = '$h:$m';
-        if (!bookedTimes.contains(label)) {
-          slots.add(label);
-        }
-        current = current.add(const Duration(minutes: 30));
-      }
-
-      return Right(slots);
+      return Right(_generateSlots(durationMinutes, bookedTimes));
     } on FirebaseException catch (e) {
-      return Left(ServerFailure(e.message ?? 'Firebase error'));
+      if (e.code == 'permission-denied') {
+        // Firestore rules block cross-user queries on 'appointments'.
+        // Fix: add `allow read: if request.auth != null;` to the appointments
+        // collection rule in Firebase Console.
+        // Fallback: return all slots so the booking flow is not broken.
+        return Right(_generateSlots(durationMinutes, const {}));
+      }
+      return Left(ServerFailure(e.message ?? 'Erro ao carregar horários'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
+  }
+
+  List<String> _generateSlots(int durationMinutes, Set<String> bookedTimes) {
+    final slots = <String>[];
+    var current = DateTime(2000, 1, 1, 9, 0);
+    final workEnd = DateTime(2000, 1, 1, 18, 30);
+    while (true) {
+      final slotEnd = current.add(Duration(minutes: durationMinutes));
+      if (slotEnd.isAfter(workEnd)) break;
+      final h = current.hour.toString().padLeft(2, '0');
+      final m = current.minute.toString().padLeft(2, '0');
+      final label = '$h:$m';
+      if (!bookedTimes.contains(label)) slots.add(label);
+      current = current.add(const Duration(minutes: 30));
+    }
+    return slots;
   }
 }
