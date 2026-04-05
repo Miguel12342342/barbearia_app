@@ -50,17 +50,24 @@ class _ShellScaffold extends StatefulWidget {
 }
 
 class _ShellScaffoldState extends State<_ShellScaffold> {
+  bool _dataLoaded = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final userId = context.read<AuthCubit>().state.userId ?? '';
-      if (userId.isEmpty) return;
-      context.read<BookingBloc>().add(LoadAppointmentsEvent(userId));
-      context.read<LoyaltyCubit>().load(userId);
-      sl<NotificationService>().saveToken(userId);
+      if (userId.isNotEmpty) _loadData(userId);
     });
+  }
+
+  void _loadData(String userId) {
+    if (_dataLoaded) return;
+    _dataLoaded = true;
+    context.read<BookingBloc>().add(LoadAppointmentsEvent(userId));
+    context.read<LoyaltyCubit>().load(userId);
+    sl<NotificationService>().saveToken(userId);
   }
 
   @override
@@ -68,7 +75,14 @@ class _ShellScaffoldState extends State<_ShellScaffold> {
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex = ShellPage._locationToIndex(location);
 
-    return Scaffold(
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (prev, curr) =>
+          prev.userId != curr.userId && curr.userId != null,
+      listener: (_, authState) {
+        final uid = authState.userId ?? '';
+        if (uid.isNotEmpty) _loadData(uid);
+      },
+      child: Scaffold(
       key: ShellPage.scaffoldKey,
       backgroundColor: AppColors.background,
       drawer: BlocBuilder<AuthCubit, AuthState>(
@@ -96,6 +110,7 @@ class _ShellScaffoldState extends State<_ShellScaffold> {
       bottomNavigationBar: _BottomNav(
         currentIndex: currentIndex,
         onTap: (index) => context.go(ShellPage._routes[index]),
+      ),
       ),
     );
   }

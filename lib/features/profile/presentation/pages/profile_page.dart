@@ -24,19 +24,38 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    context.read<ProfileCubit>().load(_userId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final uid = _userId;
+      if (uid.isNotEmpty) context.read<ProfileCubit>().load(uid);
+    });
+  }
+
+  void _loadIfNeeded(AuthState authState) {
+    final uid = authState.userId ?? '';
+    if (uid.isEmpty) return;
+    final profileState = context.read<ProfileCubit>().state;
+    if (profileState.status == ProfileStatus.initial ||
+        profileState.status == ProfileStatus.error) {
+      context.read<ProfileCubit>().load(uid);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (prev, curr) =>
+          prev.userId != curr.userId && curr.userId != null,
+      listener: (_, authState) => _loadIfNeeded(authState),
+      child: Scaffold(
       backgroundColor: AppColors.background,
       appBar: BrandAppBar(
         onMenuTap: () => ShellPage.scaffoldKey.currentState?.openDrawer(),
       ),
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
-          if (state.status == ProfileStatus.loading) {
+          if (state.status == ProfileStatus.initial ||
+              state.status == ProfileStatus.loading) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primaryGold),
             );
@@ -79,6 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           );
         },
+      ),
       ),
     );
   }
