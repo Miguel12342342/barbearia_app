@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../injection_container.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../loyalty/presentation/cubit/loyalty_cubit.dart';
@@ -19,6 +20,7 @@ class ShellPage extends StatelessWidget {
   static int _locationToIndex(String location) {
     if (location.startsWith('/booking')) return 1;
     if (location.startsWith('/loyalty')) return 2;
+    if (location.startsWith('/history')) return 2;
     if (location.startsWith('/profile')) return 3;
     return 0;
   }
@@ -57,6 +59,7 @@ class _ShellScaffoldState extends State<_ShellScaffold> {
       if (userId.isEmpty) return;
       context.read<BookingBloc>().add(LoadAppointmentsEvent(userId));
       context.read<LoyaltyCubit>().load(userId);
+      sl<NotificationService>().saveToken(userId);
     });
   }
 

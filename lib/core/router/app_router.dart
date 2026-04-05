@@ -6,6 +6,7 @@ import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/home/presentation/pages/shell_page.dart';
 import '../../features/scheduling/presentation/pages/booking_page.dart';
+import '../../features/scheduling/presentation/pages/history_page.dart';
 import '../../features/loyalty/presentation/pages/loyalty_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 
@@ -76,6 +77,11 @@ final appRouter = GoRouter(
           pageBuilder: (context, state) => const NoTransitionPage(
             child: ProfilePage(),
           ),
+        ),
+        GoRoute(
+          path: '/history',
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: HistoryPage()),
         ),
       ],
     ),

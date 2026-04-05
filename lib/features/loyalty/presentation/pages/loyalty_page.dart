@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/locale/app_localizations.dart';
 import '../../../../core/presentation/widgets/organisms/brand_app_bar.dart';
@@ -443,7 +444,7 @@ class _LoyaltyPageState extends State<LoyaltyPage> {
         const SizedBox(height: 16),
         GoldPrimaryButton(
           label: l10n.viewFullHistory,
-          onPressed: () {},
+          onPressed: () => context.push('/history'),
         ),
       ],
     );
