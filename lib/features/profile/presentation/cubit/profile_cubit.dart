@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/client_profile.dart';
 import '../../domain/repositories/i_profile_repository.dart';
@@ -52,6 +53,29 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(state.copyWith(
           status: ProfileStatus.loaded,
           profile: state.profile?.copyWith(stylePreferences: preferences),
+        ));
+        return true;
+      },
+    );
+  }
+
+  Future<bool> updatePhoto(String userId, Uint8List imageBytes) async {
+    if (isClosed) return false;
+    emit(state.copyWith(status: ProfileStatus.saving));
+    final result = await _repository.updatePhoto(userId, imageBytes);
+    if (isClosed) return false;
+    return result.fold(
+      (failure) {
+        emit(state.copyWith(
+          status: ProfileStatus.error,
+          errorMessage: failure.message,
+        ));
+        return false;
+      },
+      (url) {
+        emit(state.copyWith(
+          status: ProfileStatus.loaded,
+          profile: state.profile?.copyWith(photoUrl: url),
         ));
         return true;
       },

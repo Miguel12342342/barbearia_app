@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/locale/app_localizations.dart';
@@ -106,15 +107,11 @@ class _BookingView extends StatelessWidget {
       ),
       body: BlocListener<BookingBloc, BookingState>(
         listener: (context, state) {
-          if (state.status == BookingStatus.success) {
-            final l10n = AppLocalizations.of(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.bookingConfirmed),
-                backgroundColor: Colors.green,
-              ),
-            );
+          if (state.status == BookingStatus.success &&
+              state.lastBookedAppointment != null) {
             context.read<BookingFormCubit>().reset();
+            context.go('/booking/confirmation',
+                extra: state.lastBookedAppointment);
           } else if (state.status == BookingStatus.failure) {
             final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(

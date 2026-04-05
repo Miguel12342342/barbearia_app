@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/client_profile.dart';
@@ -36,9 +39,23 @@ class ProfileRepositoryImpl implements IProfileRepository {
     String userId,
     StylePreferences preferences,
   ) async {
-    // TODO: persist to Firestore
-    await Future.delayed(const Duration(milliseconds: 400));
-    return const Right(unit);
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'stylePreferences': {
+          'haircut': preferences.haircut,
+          'beardStyle': preferences.beardStyle,
+          'beardContour': preferences.beardContour,
+          'favoriteProducts': preferences.favoriteProducts,
+          'preferredBarberId': preferences.preferredBarberId,
+          'preferredBarberName': preferences.preferredBarberName,
+        },
+      }, SetOptions(merge: true));
+      return const Right(unit);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Erro ao salvar preferências'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
@@ -56,6 +73,27 @@ class ProfileRepositoryImpl implements IProfileRepository {
       return const Right(unit);
     } catch (_) {
       return const Right(unit);
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> updatePhoto(
+      String userId, Uint8List imageBytes) async {
+    try {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('profile_photos')
+          .child('$userId.jpg');
+      await ref.putData(
+          imageBytes, SettableMetadata(contentType: 'image/jpeg'));
+      final url = await ref.getDownloadURL();
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.updatePhotoURL(url);
+      return Right(url);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Erro ao atualizar foto'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

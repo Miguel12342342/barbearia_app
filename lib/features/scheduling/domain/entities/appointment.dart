@@ -14,6 +14,7 @@ class Appointment extends Equatable {
   final PhoneNumber clientPhone;
   final AppointmentStatus status;
   final bool isPremium;
+  final int? rating;
 
   const Appointment({
     required this.id,
@@ -26,6 +27,7 @@ class Appointment extends Equatable {
     required this.clientPhone,
     required this.status,
     this.isPremium = false,
+    this.rating,
   });
 
   bool canBeCanceled() {
@@ -57,6 +59,7 @@ class Appointment extends Equatable {
     PhoneNumber? clientPhone,
     AppointmentStatus? status,
     bool? isPremium,
+    int? rating,
   }) {
     return Appointment(
       id: id ?? this.id,
@@ -69,6 +72,7 @@ class Appointment extends Equatable {
       clientPhone: clientPhone ?? this.clientPhone,
       status: status ?? this.status,
       isPremium: isPremium ?? this.isPremium,
+      rating: rating ?? this.rating,
     );
   }
 
@@ -84,5 +88,6 @@ class Appointment extends Equatable {
         clientPhone,
         status,
         isPremium,
+        rating,
       ];
 }

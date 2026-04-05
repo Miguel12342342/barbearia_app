@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../core/locale/app_localizations.dart';
 import '../../../../../core/presentation/widgets/atoms/sheet_handle.dart';
 import '../../../../../core/presentation/widgets/atoms/status_pill.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../domain/entities/client_profile.dart';
+import '../cubit/profile_cubit.dart';
 
 class ProfilePhotoHeader extends StatelessWidget {
   final ClientProfile profile;
@@ -44,14 +47,18 @@ class ProfilePhotoHeader extends StatelessWidget {
                   color: AppColors.primaryGold),
               title: Text(l10n.takePhoto,
                   style: const TextStyle(color: AppColors.textLight)),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.cameraComingSoon),
-                    backgroundColor: AppColors.cardBackground,
-                  ),
+                final cubit = context.read<ProfileCubit>();
+                final file = await ImagePicker().pickImage(
+                  source: ImageSource.camera,
+                  maxWidth: 512,
+                  maxHeight: 512,
+                  imageQuality: 80,
                 );
+                if (file == null) return;
+                final bytes = await file.readAsBytes();
+                await cubit.updatePhoto(userId, bytes);
               },
             ),
             ListTile(
@@ -59,14 +66,18 @@ class ProfilePhotoHeader extends StatelessWidget {
                   color: AppColors.primaryGold),
               title: Text(l10n.chooseFromGallery,
                   style: const TextStyle(color: AppColors.textLight)),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.galleryComingSoon),
-                    backgroundColor: AppColors.cardBackground,
-                  ),
+                final cubit = context.read<ProfileCubit>();
+                final file = await ImagePicker().pickImage(
+                  source: ImageSource.gallery,
+                  maxWidth: 512,
+                  maxHeight: 512,
+                  imageQuality: 80,
                 );
+                if (file == null) return;
+                final bytes = await file.readAsBytes();
+                await cubit.updatePhoto(userId, bytes);
               },
             ),
             const SizedBox(height: 8),

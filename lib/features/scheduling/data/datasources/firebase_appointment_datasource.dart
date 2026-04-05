@@ -46,4 +46,29 @@ class FirebaseAppointmentDataSource implements IAppointmentDataSource {
       throw ServerException(e.message ?? 'Failed to cancel appointment');
     }
   }
+
+  @override
+  Future<void> rescheduleAppointment(
+      String appointmentId, DateTime newDate) async {
+    try {
+      await _firestore.collection('appointments').doc(appointmentId).update({
+        'date': Timestamp.fromDate(newDate),
+        'status': 'pending',
+      });
+    } on FirebaseException catch (e) {
+      throw ServerException(e.message ?? 'Failed to reschedule appointment');
+    }
+  }
+
+  @override
+  Future<void> rateAppointment(String appointmentId, int score) async {
+    try {
+      await _firestore
+          .collection('appointments')
+          .doc(appointmentId)
+          .update({'rating': score});
+    } on FirebaseException catch (e) {
+      throw ServerException(e.message ?? 'Failed to rate appointment');
+    }
+  }
 }

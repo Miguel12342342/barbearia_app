@@ -30,6 +30,7 @@ class AppointmentMapper {
       clientPhone: data['clientPhone'] as String? ?? '',
       status: data['status'] as String? ?? 'pending',
       isPremium: data['isPremium'] as bool? ?? false,
+      rating: data['rating'] as int?,
     );
   }
 
@@ -46,6 +47,7 @@ class AppointmentMapper {
       clientPhone: PhoneNumber(model.clientPhone),
       status: _statusMap[model.status] ?? AppointmentStatus.pending,
       isPremium: model.isPremium,
+      rating: model.rating,
     );
   }
 
@@ -62,6 +64,7 @@ class AppointmentMapper {
       clientPhone: entity.clientPhone.value.fold((_) => '', (p) => p),
       status: entity.status.name,
       isPremium: entity.isPremium,
+      rating: entity.rating,
     );
   }
 
@@ -77,6 +80,7 @@ class AppointmentMapper {
       'clientPhone': model.clientPhone,
       'status': model.status,
       'isPremium': model.isPremium,
+      if (model.rating != null) 'rating': model.rating,
     };
   }
 }

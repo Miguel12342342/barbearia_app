@@ -8,6 +8,8 @@ import 'package:barbearia_appzin/features/scheduling/domain/entities/appointment
 import 'package:barbearia_appzin/core/services/notification_service.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/book_appointment.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/cancel_appointment.dart';
+import 'package:barbearia_appzin/features/scheduling/domain/usecases/rate_appointment.dart';
+import 'package:barbearia_appzin/features/scheduling/domain/usecases/reschedule_appointment.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/watch_appointments.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/value_objects/appointment_date.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/value_objects/appointment_status.dart';
@@ -20,6 +22,8 @@ class MockBookAppointment extends Mock implements BookAppointment {}
 class MockCancelAppointment extends Mock implements CancelAppointment {}
 class MockWatchAppointments extends Mock implements WatchAppointments {}
 class MockNotificationService extends Mock implements NotificationService {}
+class MockRescheduleAppointment extends Mock implements RescheduleAppointment {}
+class MockRateAppointment extends Mock implements RateAppointment {}
 
 class FakeAppointment extends Fake implements Appointment {}
 
@@ -48,6 +52,8 @@ void main() {
       cancelAppointment: mockCancelAppointment,
       watchAppointments: mockWatchAppointments,
       notificationService: mockNotificationService,
+      rescheduleAppointment: MockRescheduleAppointment(),
+      rateAppointment: MockRateAppointment(),
     );
   });
 
@@ -73,7 +79,9 @@ void main() {
       act: (bloc) => bloc.add(BookAppointmentEvent(tAppointment)),
       expect: () => [
         const BookingState(status: BookingStatus.loading),
-        const BookingState(status: BookingStatus.success),
+        BookingState(
+            status: BookingStatus.success,
+            lastBookedAppointment: tAppointment),
       ],
       verify: (_) {
         verify(() => mockBookAppointment(tAppointment)).called(1);

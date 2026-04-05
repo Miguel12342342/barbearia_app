@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import '../../features/scheduling/domain/entities/appointment.dart';
+import '../router/app_router.dart';
 
 @pragma('vm:entry-point')
 Future<void> _fcmBackgroundHandler(RemoteMessage message) async {}
@@ -36,6 +38,9 @@ class NotificationService {
     );
     await _local.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        appRouter.go('/booking');
+      },
     );
 
     await _local
@@ -51,6 +56,16 @@ class NotificationService {
         );
 
     FirebaseMessaging.onBackgroundMessage(_fcmBackgroundHandler);
+
+    FirebaseMessaging.onMessageOpenedApp
+        .listen((_) => appRouter.go('/booking'));
+
+    final initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => appRouter.go('/booking'));
+    }
 
     await FirebaseMessaging.instance.requestPermission(
       alert: true,

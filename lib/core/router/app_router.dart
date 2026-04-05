@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/home/presentation/pages/shell_page.dart';
+import '../../features/scheduling/domain/entities/appointment.dart';
+import '../../features/scheduling/presentation/pages/booking_confirmation_page.dart';
 import '../../features/scheduling/presentation/pages/booking_page.dart';
 import '../../features/scheduling/presentation/pages/history_page.dart';
 import '../../features/loyalty/presentation/pages/loyalty_page.dart';
@@ -47,6 +49,17 @@ final appRouter = GoRouter(
         child: const AuthPage(),
         transitionsBuilder: _fadeTransition,
       ),
+    ),
+    GoRoute(
+      path: '/booking/confirmation',
+      pageBuilder: (context, state) {
+        final appointment = state.extra as Appointment;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: BookingConfirmationPage(appointment: appointment),
+          transitionsBuilder: _fadeTransition,
+        );
+      },
     ),
     ShellRoute(
       pageBuilder: (context, state, child) => NoTransitionPage(

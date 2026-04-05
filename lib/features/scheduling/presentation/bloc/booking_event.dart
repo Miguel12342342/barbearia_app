@@ -31,3 +31,21 @@ class CancelAppointmentEvent extends BookingEvent {
   @override
   List<Object?> get props => [appointmentId];
 }
+
+class RescheduleAppointmentEvent extends BookingEvent {
+  final String appointmentId;
+  final DateTime newDate;
+  const RescheduleAppointmentEvent(this.appointmentId, this.newDate);
+
+  @override
+  List<Object?> get props => [appointmentId, newDate];
+}
+
+class RateAppointmentEvent extends BookingEvent {
+  final String appointmentId;
+  final int score;
+  const RateAppointmentEvent(this.appointmentId, this.score);
+
+  @override
+  List<Object?> get props => [appointmentId, score];
+}

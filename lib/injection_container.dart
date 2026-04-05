@@ -19,6 +19,8 @@ import 'features/scheduling/domain/repositories/i_availability_repository.dart';
 import 'features/scheduling/domain/usecases/book_appointment.dart';
 import 'features/scheduling/domain/usecases/cancel_appointment.dart';
 import 'features/scheduling/domain/usecases/get_available_slots.dart';
+import 'features/scheduling/domain/usecases/rate_appointment.dart';
+import 'features/scheduling/domain/usecases/reschedule_appointment.dart';
 import 'features/scheduling/domain/usecases/watch_appointments.dart';
 import 'features/scheduling/presentation/bloc/booking_bloc.dart';
 import 'features/scheduling/presentation/cubit/booking_form_cubit.dart';
@@ -72,6 +74,8 @@ Future<void> init() async {
       cancelAppointment: sl(),
       watchAppointments: sl(),
       notificationService: sl(),
+      rescheduleAppointment: sl(),
+      rateAppointment: sl(),
     ),
   );
 
@@ -87,6 +91,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CancelAppointment(sl()));
   sl.registerLazySingleton(() => WatchAppointments(sl()));
   sl.registerLazySingleton(() => GetAvailableSlots(sl()));
+  sl.registerLazySingleton(() => RescheduleAppointment(sl()));
+  sl.registerLazySingleton(() => RateAppointment(sl()));
 
   sl.registerLazySingleton<IAppointmentRepository>(
     () => AppointmentRepositoryImpl(sl()),
@@ -147,5 +153,13 @@ class MockAppointmentDataSource implements IAppointmentDataSource {
 
   @override
   Future<void> cancelAppointment(String appointmentId) =>
+      Future.delayed(const Duration(milliseconds: 500));
+
+  @override
+  Future<void> rescheduleAppointment(String appointmentId, DateTime newDate) =>
+      Future.delayed(const Duration(milliseconds: 500));
+
+  @override
+  Future<void> rateAppointment(String appointmentId, int score) =>
       Future.delayed(const Duration(milliseconds: 500));
 }

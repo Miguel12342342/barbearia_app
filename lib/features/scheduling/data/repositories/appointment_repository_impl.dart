@@ -59,4 +59,30 @@ class AppointmentRepositoryImpl implements IAppointmentRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> rescheduleAppointment(
+      String appointmentId, DateTime newDate) async {
+    try {
+      await _dataSource.rescheduleAppointment(appointmentId, newDate);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> rateAppointment(
+      String appointmentId, int score) async {
+    try {
+      await _dataSource.rateAppointment(appointmentId, score);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

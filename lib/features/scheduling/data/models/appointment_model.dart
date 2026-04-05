@@ -11,6 +11,7 @@ class AppointmentModel {
   final String clientPhone;
   final String status;
   final bool isPremium;
+  final int? rating;
 
   const AppointmentModel({
     required this.id,
@@ -23,5 +24,6 @@ class AppointmentModel {
     required this.clientPhone,
     required this.status,
     required this.isPremium,
+    this.rating,
   });
 }
