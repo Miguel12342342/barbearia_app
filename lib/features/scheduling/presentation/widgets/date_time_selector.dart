@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/molecules/day_pill.dart';
 import '../../../../core/presentation/widgets/molecules/time_slot_button.dart';
+import '../cubit/booking_form_state.dart';
 
 class DateTimeSelector extends StatelessWidget {
   final DateTime? selectedDate;
   final String? selectedTime;
   final ValueChanged<DateTime> onDateSelected;
   final ValueChanged<String> onTimeSelected;
-
-  // TODO: replace with real available slots from IAvailabilityRepository
-  static const _availableSlots = [
-    '09:00', '10:30', '11:00', '14:00', '15:30', '17:00',
-  ];
+  final List<String> availableSlots;
+  final BookingFormSlotsStatus slotsStatus;
 
   const DateTimeSelector({
     super.key,
@@ -20,6 +18,8 @@ class DateTimeSelector extends StatelessWidget {
     required this.selectedTime,
     required this.onDateSelected,
     required this.onTimeSelected,
+    required this.availableSlots,
+    required this.slotsStatus,
   });
 
   @override
@@ -78,29 +78,59 @@ class DateTimeSelector extends StatelessWidget {
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final itemWidth = (constraints.maxWidth - 24) / 3;
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: _availableSlots
-                    .map(
-                      (time) => SizedBox(
-                        width: itemWidth,
-                        child: TimeSlotButton(
-                          time: time,
-                          isSelected: selectedTime == time,
-                          onTap: () => onTimeSelected(time),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-          ),
+          child: _buildSlotsContent(),
         ),
       ],
+    );
+  }
+
+  Widget _buildSlotsContent() {
+    if (slotsStatus == BookingFormSlotsStatus.loading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(color: AppColors.primaryGold),
+        ),
+      );
+    }
+    if (slotsStatus == BookingFormSlotsStatus.error) {
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text(
+          'Erro ao carregar horários.',
+          style: TextStyle(color: AppColors.error),
+        ),
+      );
+    }
+    if (slotsStatus == BookingFormSlotsStatus.loaded && availableSlots.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text(
+          'Nenhum horário disponível neste dia.',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+      );
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 24) / 3;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: availableSlots
+              .map(
+                (time) => SizedBox(
+                  width: itemWidth,
+                  child: TimeSlotButton(
+                    time: time,
+                    isSelected: selectedTime == time,
+                    onTap: () => onTimeSelected(time),
+                  ),
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 }

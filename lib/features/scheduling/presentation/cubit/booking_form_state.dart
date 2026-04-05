@@ -4,6 +4,8 @@ import '../../../catalog/domain/entities/service.dart';
 
 enum BookingFormStatus { idle, loadingData, ready, error }
 
+enum BookingFormSlotsStatus { idle, loading, loaded, error }
+
 class BookingFormState extends Equatable {
   final BookingFormStatus status;
   final List<Service> services;
@@ -13,6 +15,8 @@ class BookingFormState extends Equatable {
   final DateTime? selectedDate;
   final String? selectedTime;
   final String errorMessage;
+  final List<String> availableSlots;
+  final BookingFormSlotsStatus slotsStatus;
 
   const BookingFormState({
     this.status = BookingFormStatus.idle,
@@ -23,6 +27,8 @@ class BookingFormState extends Equatable {
     this.selectedDate,
     this.selectedTime,
     this.errorMessage = '',
+    this.availableSlots = const [],
+    this.slotsStatus = BookingFormSlotsStatus.idle,
   });
 
   bool get isComplete =>
@@ -41,6 +47,8 @@ class BookingFormState extends Equatable {
     String? selectedTime,
     String? errorMessage,
     bool clearSelectedTime = false,
+    List<String>? availableSlots,
+    BookingFormSlotsStatus? slotsStatus,
   }) {
     return BookingFormState(
       status: status ?? this.status,
@@ -51,6 +59,8 @@ class BookingFormState extends Equatable {
       selectedDate: selectedDate ?? this.selectedDate,
       selectedTime: clearSelectedTime ? null : (selectedTime ?? this.selectedTime),
       errorMessage: errorMessage ?? this.errorMessage,
+      availableSlots: availableSlots ?? this.availableSlots,
+      slotsStatus: slotsStatus ?? this.slotsStatus,
     );
   }
 
@@ -64,5 +74,7 @@ class BookingFormState extends Equatable {
         selectedDate,
         selectedTime,
         errorMessage,
+        availableSlots,
+        slotsStatus,
       ];
 }

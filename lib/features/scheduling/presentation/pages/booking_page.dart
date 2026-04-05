@@ -189,6 +189,8 @@ class _BookingView extends StatelessWidget {
                             context.read<BookingFormCubit>().selectDate(date),
                         onTimeSelected: (time) =>
                             context.read<BookingFormCubit>().selectTime(time),
+                        availableSlots: formState.availableSlots,
+                        slotsStatus: formState.slotsStatus,
                       ),
                       const SizedBox(height: 40),
                       BookingSummaryCard(

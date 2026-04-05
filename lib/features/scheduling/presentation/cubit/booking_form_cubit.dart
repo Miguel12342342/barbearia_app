@@ -4,17 +4,23 @@ import '../../../barber/domain/entities/barber.dart';
 import '../../../barber/domain/usecases/get_barbers.dart';
 import '../../../catalog/domain/entities/service.dart';
 import '../../../catalog/domain/usecases/get_services.dart';
+import '../../domain/usecases/get_available_slots.dart';
 import 'booking_form_state.dart';
 
 class BookingFormCubit extends Cubit<BookingFormState> {
   final GetServices _getServices;
   final GetBarbers _getBarbers;
+  final GetAvailableSlots _getAvailableSlots;
+
+  Object _fetchToken = Object();
 
   BookingFormCubit({
     required GetServices getServices,
     required GetBarbers getBarbers,
+    required GetAvailableSlots getAvailableSlots,
   })  : _getServices = getServices,
         _getBarbers = getBarbers,
+        _getAvailableSlots = getAvailableSlots,
         super(const BookingFormState());
 
   Future<void> loadFormData() async {
@@ -49,15 +55,26 @@ class BookingFormCubit extends Cubit<BookingFormState> {
   }
 
   void selectService(Service service) {
-    if (!isClosed) emit(state.copyWith(selectedService: service));
+    if (!isClosed) {
+      emit(state.copyWith(selectedService: service));
+      if (state.selectedBarber != null && state.selectedDate != null) {
+        _fetchSlots();
+      }
+    }
   }
 
   void selectBarber(Barber barber) {
-    if (!isClosed) emit(state.copyWith(selectedBarber: barber));
+    if (!isClosed) {
+      emit(state.copyWith(selectedBarber: barber));
+      _fetchSlots();
+    }
   }
 
   void selectDate(DateTime date) {
-    if (!isClosed) emit(state.copyWith(selectedDate: date, clearSelectedTime: true));
+    if (!isClosed) {
+      emit(state.copyWith(selectedDate: date, clearSelectedTime: true));
+      _fetchSlots();
+    }
   }
 
   void selectTime(String time) {
@@ -66,5 +83,31 @@ class BookingFormCubit extends Cubit<BookingFormState> {
 
   void reset() {
     if (!isClosed) emit(const BookingFormState());
+  }
+
+  Future<void> _fetchSlots() async {
+    final barber = state.selectedBarber;
+    final date = state.selectedDate;
+    if (barber == null || date == null) return;
+    final token = _fetchToken = Object();
+    emit(state.copyWith(slotsStatus: BookingFormSlotsStatus.loading));
+    final result = await _getAvailableSlots(
+      GetAvailableSlotsParams(
+        barberId: barber.id,
+        date: date,
+        durationMinutes: state.selectedService?.durationMinutes ?? 30,
+      ),
+    );
+    if (token != _fetchToken || isClosed) return;
+    result.fold(
+      (failure) => emit(state.copyWith(
+        slotsStatus: BookingFormSlotsStatus.error,
+        errorMessage: failure.message,
+      )),
+      (slots) => emit(state.copyWith(
+        slotsStatus: BookingFormSlotsStatus.loaded,
+        availableSlots: slots,
+      )),
+    );
   }
 }
