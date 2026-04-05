@@ -9,6 +9,7 @@ import '../../../loyalty/presentation/cubit/loyalty_cubit.dart';
 import '../../../loyalty/presentation/cubit/loyalty_state.dart';
 import '../../../scheduling/domain/value_objects/appointment_status.dart';
 import '../../../scheduling/presentation/bloc/booking_bloc.dart';
+import '../../../scheduling/presentation/bloc/booking_event.dart';
 import '../../../scheduling/presentation/bloc/booking_state.dart';
 import '../widgets/home_header.dart';
 import '../widgets/upcoming_appointment_card.dart';
@@ -88,6 +89,12 @@ class HomePage extends StatelessWidget {
                   barberName: apt.barberName,
                   timeLabel: timeLabel,
                   dateLabel: dateLabel,
+                  appointmentId: apt.id,
+                  onCancel: apt.canBeCanceled()
+                      ? () => context
+                          .read<BookingBloc>()
+                          .add(CancelAppointmentEvent(apt.id))
+                      : null,
                 );
               },
             ),

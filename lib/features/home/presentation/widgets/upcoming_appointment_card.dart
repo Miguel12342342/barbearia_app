@@ -10,6 +10,8 @@ class UpcomingAppointmentCard extends StatelessWidget {
   final String? dateLabel;
   final VoidCallback? onCheckIn;
   final String? backgroundImageUrl;
+  final String? appointmentId;
+  final VoidCallback? onCancel;
 
   const UpcomingAppointmentCard({
     super.key,
@@ -19,6 +21,8 @@ class UpcomingAppointmentCard extends StatelessWidget {
     this.dateLabel,
     this.onCheckIn,
     this.backgroundImageUrl,
+    this.appointmentId,
+    this.onCancel,
   });
 
   bool get _hasAppointment =>
@@ -27,10 +31,46 @@ class UpcomingAppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!_hasAppointment) return _buildEmptyState();
-    return _buildCard();
+    return _buildCard(context);
   }
 
-  Widget _buildCard() {
+  void _showCancelDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.cardBackground,
+        title: const Text(
+          'Cancelar agendamento',
+          style: TextStyle(color: AppColors.textLight),
+        ),
+        content: const Text(
+          'Tem certeza que deseja cancelar este agendamento?',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text(
+              'NÃO',
+              style: TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              onCancel?.call();
+            },
+            child: const Text(
+              'SIM, CANCELAR',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context) {
     return Semantics(
       label:
           '$serviceName com $barberName às $timeLabel, $dateLabel. Botão de check-in disponível.',
@@ -79,8 +119,21 @@ class UpcomingAppointmentCard extends StatelessWidget {
                     children: [
                       const StatusPill(
                           label: 'UPCOMING', variant: PillVariant.upcoming),
-                      const Icon(Icons.calendar_today_outlined,
-                          color: AppColors.textLight, size: 20),
+                      Row(
+                        children: [
+                          if (onCancel != null)
+                            IconButton(
+                              icon: const Icon(Icons.cancel_outlined,
+                                  color: AppColors.textLight, size: 20),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () => _showCancelDialog(context),
+                            ),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.calendar_today_outlined,
+                              color: AppColors.textLight, size: 20),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
