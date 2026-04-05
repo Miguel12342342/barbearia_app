@@ -38,29 +38,13 @@ class CuratedServicesList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  const Text(
-                    'Curated Services',
-                    style: TextStyle(
-                      color: AppColors.textLight,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'VIEW ALL MENU',
-                    style: TextStyle(
-                      color: AppColors.primaryGold.withValues(alpha: 0.9),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
+              const Text(
+                'Curated Services',
+                style: TextStyle(
+                  color: AppColors.textLight,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
               ...state.services.map((s) => _ServiceCard(service: s)),

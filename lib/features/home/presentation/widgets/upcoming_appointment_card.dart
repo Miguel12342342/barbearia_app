@@ -8,7 +8,6 @@ class UpcomingAppointmentCard extends StatelessWidget {
   final String? barberName;
   final String? timeLabel;
   final String? dateLabel;
-  final VoidCallback? onCheckIn;
   final String? backgroundImageUrl;
   final String? appointmentId;
   final VoidCallback? onCancel;
@@ -19,7 +18,6 @@ class UpcomingAppointmentCard extends StatelessWidget {
     this.barberName,
     this.timeLabel,
     this.dateLabel,
-    this.onCheckIn,
     this.backgroundImageUrl,
     this.appointmentId,
     this.onCancel,
@@ -72,8 +70,7 @@ class UpcomingAppointmentCard extends StatelessWidget {
 
   Widget _buildCard(BuildContext context) {
     return Semantics(
-      label:
-          '$serviceName com $barberName às $timeLabel, $dateLabel. Botão de check-in disponível.',
+      label: '$serviceName com $barberName às $timeLabel, $dateLabel.',
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -155,48 +152,25 @@ class UpcomingAppointmentCard extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            timeLabel!,
-                            style: const TextStyle(
-                              color: AppColors.primaryGold,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            dateLabel!.toUpperCase(),
-                            style: const TextStyle(
-                              color: AppColors.textMuted,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                      ElevatedButton(
-                        onPressed: onCheckIn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryGold,
-                          foregroundColor: AppColors.background,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      Text(
+                        timeLabel!,
+                        style: const TextStyle(
+                          color: AppColors.primaryGold,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
                         ),
-                        child: const Text(
-                          'CHECK IN',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dateLabel!.toUpperCase(),
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
                         ),
                       ),
                     ],
