@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:barbearia_appzin/core/error/failures.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/entities/appointment.dart';
+import 'package:barbearia_appzin/core/services/notification_service.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/book_appointment.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/cancel_appointment.dart';
 import 'package:barbearia_appzin/features/scheduling/domain/usecases/watch_appointments.dart';
@@ -18,6 +19,7 @@ import 'package:barbearia_appzin/features/scheduling/presentation/bloc/booking_s
 class MockBookAppointment extends Mock implements BookAppointment {}
 class MockCancelAppointment extends Mock implements CancelAppointment {}
 class MockWatchAppointments extends Mock implements WatchAppointments {}
+class MockNotificationService extends Mock implements NotificationService {}
 
 class FakeAppointment extends Fake implements Appointment {}
 
@@ -26,6 +28,7 @@ void main() {
   late MockBookAppointment mockBookAppointment;
   late MockCancelAppointment mockCancelAppointment;
   late MockWatchAppointments mockWatchAppointments;
+  late MockNotificationService mockNotificationService;
 
   setUpAll(() {
     registerFallbackValue(FakeAppointment());
@@ -35,10 +38,16 @@ void main() {
     mockBookAppointment = MockBookAppointment();
     mockCancelAppointment = MockCancelAppointment();
     mockWatchAppointments = MockWatchAppointments();
+    mockNotificationService = MockNotificationService();
+    when(() => mockNotificationService.scheduleAppointmentReminder(any()))
+        .thenAnswer((_) async {});
+    when(() => mockNotificationService.cancelReminder(any()))
+        .thenAnswer((_) async {});
     bloc = BookingBloc(
       bookAppointment: mockBookAppointment,
       cancelAppointment: mockCancelAppointment,
       watchAppointments: mockWatchAppointments,
+      notificationService: mockNotificationService,
     );
   });
 

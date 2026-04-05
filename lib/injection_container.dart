@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
+// ── Core ──────────────────────────────────────────────────────────────────────
+import 'core/services/notification_service.dart';
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 
@@ -10,9 +13,12 @@ import 'features/scheduling/data/datasources/i_appointment_datasource.dart';
 import 'features/scheduling/data/datasources/firebase_appointment_datasource.dart';
 import 'features/scheduling/data/models/appointment_model.dart';
 import 'features/scheduling/data/repositories/appointment_repository_impl.dart';
+import 'features/scheduling/data/repositories/availability_repository_impl.dart';
 import 'features/scheduling/domain/repositories/i_appointment_repository.dart';
+import 'features/scheduling/domain/repositories/i_availability_repository.dart';
 import 'features/scheduling/domain/usecases/book_appointment.dart';
 import 'features/scheduling/domain/usecases/cancel_appointment.dart';
+import 'features/scheduling/domain/usecases/get_available_slots.dart';
 import 'features/scheduling/domain/usecases/watch_appointments.dart';
 import 'features/scheduling/presentation/bloc/booking_bloc.dart';
 import 'features/scheduling/presentation/cubit/booking_form_cubit.dart';
@@ -46,6 +52,14 @@ import 'core/locale/locale_cubit.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // ── Firebase ───────────────────────────────────────────────────────────────
+  sl.registerLazySingleton<FirebaseFirestore>(
+    () => FirebaseFirestore.instance,
+  );
+
+  // ── Notifications ──────────────────────────────────────────────────────────
+  sl.registerLazySingleton<NotificationService>(() => NotificationService(sl()));
+
   // ── Auth ───────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerFactory(() => AuthCubit(auth: sl()));
@@ -57,6 +71,7 @@ Future<void> init() async {
       bookAppointment: sl(),
       cancelAppointment: sl(),
       watchAppointments: sl(),
+      notificationService: sl(),
     ),
   );
 
@@ -64,20 +79,22 @@ Future<void> init() async {
     () => BookingFormCubit(
       getServices: sl(),
       getBarbers: sl(),
+      getAvailableSlots: sl(),
     ),
   );
 
   sl.registerLazySingleton(() => BookAppointment(sl()));
   sl.registerLazySingleton(() => CancelAppointment(sl()));
   sl.registerLazySingleton(() => WatchAppointments(sl()));
+  sl.registerLazySingleton(() => GetAvailableSlots(sl()));
 
   sl.registerLazySingleton<IAppointmentRepository>(
     () => AppointmentRepositoryImpl(sl()),
   );
-
-  sl.registerLazySingleton<FirebaseFirestore>(
-    () => FirebaseFirestore.instance,
+  sl.registerLazySingleton<IAvailabilityRepository>(
+    () => AvailabilityRepositoryImpl(sl()),
   );
+
   sl.registerLazySingleton<IAppointmentDataSource>(
     () => FirebaseAppointmentDataSource(sl()),
   );

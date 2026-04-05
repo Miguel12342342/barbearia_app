@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'core/locale/app_localizations.dart';
 import 'core/locale/locale_cubit.dart';
 import 'core/router/app_router.dart';
+import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/catalog/presentation/cubit/catalog_cubit.dart';
@@ -19,6 +20,7 @@ void main() async {
   await initializeDateFormatting('pt_BR', null);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
+  await di.sl<NotificationService>().init();
   runApp(const CorteEBarbaApp());
 }
 

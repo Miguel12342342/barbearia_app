@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
+import '../../../../core/services/notification_service.dart';
 import '../../domain/usecases/book_appointment.dart';
 import '../../domain/usecases/cancel_appointment.dart';
 import '../../domain/usecases/watch_appointments.dart';
@@ -11,14 +12,17 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   final BookAppointment _bookAppointment;
   final CancelAppointment _cancelAppointment;
   final WatchAppointments _watchAppointments;
+  final NotificationService _notificationService;
 
   BookingBloc({
     required BookAppointment bookAppointment,
     required CancelAppointment cancelAppointment,
     required WatchAppointments watchAppointments,
+    required NotificationService notificationService,
   })  : _bookAppointment = bookAppointment,
         _cancelAppointment = cancelAppointment,
         _watchAppointments = watchAppointments,
+        _notificationService = notificationService,
         super(const BookingState()) {
     on<LoadAppointmentsEvent>(
       _onLoadAppointments,
@@ -72,7 +76,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         status: BookingStatus.failure,
         errorMessage: failure.message,
       )),
-      (_) => emit(state.copyWith(status: BookingStatus.success)),
+      (_) {
+        _notificationService
+            .scheduleAppointmentReminder(event.appointment);
+        emit(state.copyWith(status: BookingStatus.success));
+      },
     );
   }
 
@@ -89,7 +97,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         status: BookingStatus.failure,
         errorMessage: failure.message,
       )),
-      (_) => emit(state.copyWith(status: BookingStatus.success)),
+      (_) {
+        _notificationService.cancelReminder(event.appointmentId);
+        emit(state.copyWith(status: BookingStatus.success));
+      },
     );
   }
 }
