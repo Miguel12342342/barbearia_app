@@ -7,6 +7,7 @@ import 'core/locale/app_localizations.dart';
 import 'core/locale/locale_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/services/notification_service.dart';
+import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/catalog/presentation/cubit/catalog_cubit.dart';
@@ -44,6 +45,10 @@ class CorteEBarbaApp extends StatelessWidget {
           theme: AppTheme.darkTheme,
           themeMode: ThemeMode.dark,
           locale: locale,
+          builder: (context, child) => ColoredBox(
+            color: AppColors.background,
+            child: child ?? const SizedBox.shrink(),
+          ),
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
