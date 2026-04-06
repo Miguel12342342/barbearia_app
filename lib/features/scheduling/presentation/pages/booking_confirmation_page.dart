@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/locale/app_localizations.dart';
 import '../../../../core/presentation/widgets/atoms/gold_primary_button.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/appointment.dart';
@@ -11,8 +12,9 @@ class BookingConfirmationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final date = appointment.date.value.fold((_) => DateTime.now(), (d) => d);
-    final dateLabel = DateFormat("EEEE, d 'de' MMM", 'pt_BR').format(date);
+    final dateLabel = DateFormat(l10n.bookingDateFormat, l10n.dateLocale).format(date);
     final timeLabel = DateFormat('HH:mm').format(date);
 
     return Scaffold(
@@ -36,10 +38,10 @@ class BookingConfirmationPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Agendamento\nConfirmado!',
+              Text(
+                l10n.bookingConfirmedTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.textLight,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
@@ -52,18 +54,19 @@ class BookingConfirmationPage extends StatelessWidget {
                 barberName: appointment.barberName,
                 dateLabel: dateLabel,
                 timeLabel: timeLabel,
+                l10n: l10n,
               ),
               const Spacer(),
               GoldPrimaryButton(
-                label: 'IR PARA HOME',
+                label: l10n.goHome,
                 onPressed: () => context.go('/home'),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () => context.go('/booking'),
-                child: const Text(
-                  'Ver meus agendamentos',
-                  style: TextStyle(
+                child: Text(
+                  l10n.viewMyAppointments,
+                  style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 14,
                   ),
@@ -83,12 +86,14 @@ class _SummaryCard extends StatelessWidget {
   final String barberName;
   final String dateLabel;
   final String timeLabel;
+  final AppLocalizations l10n;
 
   const _SummaryCard({
     required this.serviceName,
     required this.barberName,
     required this.dateLabel,
     required this.timeLabel,
+    required this.l10n,
   });
 
   @override
@@ -102,13 +107,13 @@ class _SummaryCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _Row(label: 'SERVIÇO', value: serviceName),
+          _Row(label: l10n.serviceLabel, value: serviceName),
           const Divider(color: Colors.white10, height: 28),
-          _Row(label: 'BARBEIRO', value: barberName),
+          _Row(label: l10n.barberLabel, value: barberName),
           const Divider(color: Colors.white10, height: 28),
-          _Row(label: 'DATA', value: dateLabel),
+          _Row(label: l10n.dateLabel, value: dateLabel),
           const Divider(color: Colors.white10, height: 28),
-          _Row(label: 'HORÁRIO', value: timeLabel),
+          _Row(label: l10n.timeLabel, value: timeLabel),
         ],
       ),
     );
