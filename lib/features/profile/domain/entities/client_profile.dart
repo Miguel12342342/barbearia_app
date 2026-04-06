@@ -21,14 +21,6 @@ class StylePreferences extends Equatable {
     required this.preferredBarberName,
   });
 
-  String get lastServiceLabel {
-    if (lastServiceDate == null) return 'Nenhum serviço ainda';
-    final diff = DateTime.now().difference(lastServiceDate!).inDays;
-    if (diff == 0) return 'Hoje';
-    if (diff == 1) return 'Ontem';
-    return '$diff dias atrás';
-  }
-
   StylePreferences copyWith({
     String? haircut,
     DateTime? lastServiceDate,
@@ -81,14 +73,6 @@ class ClientProfile extends Equatable {
   });
 
   bool get isPremium => tier == MemberTier.premium;
-
-  String get memberSinceFormatted {
-    const months = [
-      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
-    ];
-    return 'Cliente desde ${months[memberSince.month - 1]}, ${memberSince.year}';
-  }
 
   ClientProfile copyWith({
     String? id,

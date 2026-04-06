@@ -105,6 +105,19 @@ class AppLocalizations {
     'dataUpdated': 'Dados atualizados!',
     'saveError': 'Erro ao salvar. Tente novamente.',
     'separateByComma': 'Separe por vírgula',
+    // Date selector
+    'selectDay': 'SELECIONE O DIA',
+    'availableSlots': 'HORÁRIOS DISPONÍVEIS',
+    'slotsError': 'Erro ao carregar horários.',
+    'noSlotsAvailable': 'Nenhum horário disponível neste dia.',
+    'selected': 'selecionado',
+    // Booking confirmation
+    'bookingConfirmedTitle': 'Agendamento\nConfirmado!',
+    'dateLabel': 'DATA',
+    'timeLabel': 'HORÁRIO',
+    'bookingDateFormat': "EEEE, d 'de' MMM",
+    'goHome': 'IR PARA O INÍCIO',
+    'viewMyAppointments': 'Ver meus agendamentos',
     // Date
     'dateLocale': 'pt_BR',
   };
@@ -197,6 +210,19 @@ class AppLocalizations {
     'dataUpdated': 'Data updated!',
     'saveError': 'Error saving. Try again.',
     'separateByComma': 'Separate by comma',
+    // Date selector
+    'selectDay': 'SELECT A DAY',
+    'availableSlots': 'AVAILABLE TIMES',
+    'slotsError': 'Failed to load available times.',
+    'noSlotsAvailable': 'No times available for this day.',
+    'selected': 'selected',
+    // Booking confirmation
+    'bookingConfirmedTitle': 'Appointment\nConfirmed!',
+    'dateLabel': 'DATE',
+    'timeLabel': 'TIME',
+    'bookingDateFormat': 'EEEE, MMM d',
+    'goHome': 'GO TO HOME',
+    'viewMyAppointments': 'View my appointments',
     // Date
     'dateLocale': 'en',
   };
@@ -293,6 +319,19 @@ class AppLocalizations {
     'dataUpdated': '¡Datos actualizados!',
     'saveError': 'Error al guardar. Inténtalo de nuevo.',
     'separateByComma': 'Separar por coma',
+    // Date selector
+    'selectDay': 'SELECCIONA EL DÍA',
+    'availableSlots': 'HORARIOS DISPONIBLES',
+    'slotsError': 'Error al cargar los horarios.',
+    'noSlotsAvailable': 'No hay horarios disponibles para este día.',
+    'selected': 'seleccionado',
+    // Booking confirmation
+    'bookingConfirmedTitle': '¡Cita\nConfirmada!',
+    'dateLabel': 'FECHA',
+    'timeLabel': 'HORA',
+    'bookingDateFormat': "EEEE, d 'de' MMM",
+    'goHome': 'IR AL INICIO',
+    'viewMyAppointments': 'Ver mis citas',
     // Date
     'dateLocale': 'es',
   };
@@ -397,6 +436,17 @@ class AppLocalizations {
   String get dataUpdated => _t('dataUpdated');
   String get saveError => _t('saveError');
   String get separateByComma => _t('separateByComma');
+  String get selectDay => _t('selectDay');
+  String get availableSlots => _t('availableSlots');
+  String get slotsError => _t('slotsError');
+  String get noSlotsAvailable => _t('noSlotsAvailable');
+  String get selected => _t('selected');
+  String get bookingConfirmedTitle => _t('bookingConfirmedTitle');
+  String get dateLabel => _t('dateLabel');
+  String get timeLabel => _t('timeLabel');
+  String get bookingDateFormat => _t('bookingDateFormat');
+  String get goHome => _t('goHome');
+  String get viewMyAppointments => _t('viewMyAppointments');
   String get dateLocale => _t('dateLocale');
 
   // ── Parameterized methods ───────────────────────────────────────────────────
@@ -447,11 +497,64 @@ class AppLocalizations {
   String loyaltyProgressLabel(int percent) {
     switch (locale.languageCode) {
       case 'en':
-        return '$percent% of loyalty program completed';
+        return '$percent% of the loyalty program completed';
       case 'es':
         return '$percent% del programa de fidelidad completado';
       default:
         return '$percent% do programa de fidelidade concluído';
+    }
+  }
+
+  String memberSinceLabel(DateTime date) {
+    switch (locale.languageCode) {
+      case 'en':
+        const months = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December',
+        ];
+        return 'Member since ${months[date.month - 1]} ${date.year}';
+      case 'es':
+        const months = [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+        ];
+        return 'Cliente desde ${months[date.month - 1]} de ${date.year}';
+      default:
+        const months = [
+          'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+          'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
+        ];
+        return 'Cliente desde ${months[date.month - 1]} de ${date.year}';
+    }
+  }
+
+  String lastServiceLabel(DateTime? date) {
+    if (date == null) {
+      switch (locale.languageCode) {
+        case 'en': return 'No service yet';
+        case 'es': return 'Ningún servicio aún';
+        default:   return 'Nenhum serviço ainda';
+      }
+    }
+    final diff = DateTime.now().difference(date).inDays;
+    if (diff == 0) {
+      switch (locale.languageCode) {
+        case 'en': return 'Today';
+        case 'es': return 'Hoy';
+        default:   return 'Hoje';
+      }
+    }
+    if (diff == 1) {
+      switch (locale.languageCode) {
+        case 'en': return 'Yesterday';
+        case 'es': return 'Ayer';
+        default:   return 'Ontem';
+      }
+    }
+    switch (locale.languageCode) {
+      case 'en': return '$diff days ago';
+      case 'es': return 'Hace $diff días';
+      default:   return 'Há $diff dias';
     }
   }
 }

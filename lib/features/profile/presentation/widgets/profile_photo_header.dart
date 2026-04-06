@@ -156,7 +156,7 @@ class ProfilePhotoHeader extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          profile.memberSinceFormatted,
+          AppLocalizations.of(context).memberSinceLabel(profile.memberSince),
           style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
         ),
       ],

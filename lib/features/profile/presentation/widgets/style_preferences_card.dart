@@ -63,7 +63,7 @@ class StylePreferencesCard extends StatelessWidget {
           const SizedBox(height: 18),
           _PrefSection(label: l10n.haircutLabel, lines: [
             prefs.haircut,
-            '${l10n.lastService}: ${prefs.lastServiceLabel}',
+            '${l10n.lastService}: ${l10n.lastServiceLabel(prefs.lastServiceDate)}',
           ]),
           const SizedBox(height: 14),
           _PrefSection(label: l10n.beardStyleLabel, lines: [
