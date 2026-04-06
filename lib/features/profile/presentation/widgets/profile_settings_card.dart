@@ -86,17 +86,62 @@ class _ProfileSettingsCardState extends State<ProfileSettingsCard> {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 32),
-              const Icon(Icons.credit_card_off_rounded,
-                  color: AppColors.textMuted, size: 48),
-              const SizedBox(height: 12),
-              Text(
-                l10n.noPaymentMethod,
-                style:
-                    const TextStyle(color: AppColors.textMuted, fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 24),
+              // Mock card visual
+              Container(
+                width: double.infinity,
+                height: 100,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2A2A2A), Color(0xFF1A1A1A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white10),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGold.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: AppColors.primaryGold.withValues(alpha: 0.4)),
+                      ),
+                      child: const Icon(Icons.credit_card_rounded,
+                          color: AppColors.primaryGold, size: 20),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.noPaymentMethod,
+                          style: const TextStyle(
+                              color: AppColors.textMuted, fontSize: 12),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.comingSoon,
+                          style: const TextStyle(
+                            color: AppColors.primaryGold,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
