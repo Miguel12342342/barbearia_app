@@ -4,8 +4,10 @@ enum ServiceIconType { scissors, beard, combo, ritual }
 
 class Service extends Equatable {
   final String id;
-  final String name;
-  final String description;
+  final String name; // PT-BR default
+  final String description; // PT-BR default
+  final Map<String, String> localizedNames;
+  final Map<String, String> localizedDescriptions;
   final double priceAmount;
   final int durationMinutes;
   final ServiceIconType iconType;
@@ -15,11 +17,19 @@ class Service extends Equatable {
     required this.id,
     required this.name,
     required this.description,
+    this.localizedNames = const {},
+    this.localizedDescriptions = const {},
     required this.priceAmount,
     required this.durationMinutes,
     required this.iconType,
     this.isPremium = false,
   });
+
+  String nameFor(String languageCode) =>
+      localizedNames[languageCode] ?? name;
+
+  String descriptionFor(String languageCode) =>
+      localizedDescriptions[languageCode] ?? description;
 
   String get formattedPrice {
     final formatted = priceAmount.toStringAsFixed(2).replaceAll('.', ',');

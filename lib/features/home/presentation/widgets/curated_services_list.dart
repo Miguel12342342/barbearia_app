@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/locale/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../catalog/domain/entities/service.dart';
 import '../../../catalog/presentation/cubit/catalog_cubit.dart';
@@ -97,7 +98,7 @@ class _ServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            service.name,
+            service.nameFor(AppLocalizations.of(context).locale.languageCode),
             style: const TextStyle(
               color: AppColors.textLight,
               fontSize: 18,
@@ -106,7 +107,7 @@ class _ServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            service.description,
+            service.descriptionFor(AppLocalizations.of(context).locale.languageCode),
             style: const TextStyle(
               color: AppColors.textMuted,
               fontSize: 13,

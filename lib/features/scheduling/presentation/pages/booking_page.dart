@@ -87,7 +87,8 @@ class _BookingView extends StatelessWidget {
       userId: context.read<AuthCubit>().state.userId ?? '',
       serviceId: formState.selectedService!.id,
       barberId: formState.selectedBarber!.id,
-      serviceName: formState.selectedService!.name,
+      serviceName: formState.selectedService!.nameFor(
+          AppLocalizations.of(context).locale.languageCode),
       barberName: formState.selectedBarber!.name,
       date: AppointmentDate(appointmentDate),
       clientPhone: PhoneNumber(AppConstants.kDevPhone),
@@ -191,7 +192,8 @@ class _BookingView extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
                       BookingSummaryCard(
-                        serviceName: formState.selectedService?.name ?? '-',
+                        serviceName: formState.selectedService?.nameFor(
+                            AppLocalizations.of(context).locale.languageCode) ?? '-',
                         servicePrice:
                             formState.selectedService?.formattedPrice ?? '-',
                         barberName: formState.selectedBarber?.name ?? '-',
