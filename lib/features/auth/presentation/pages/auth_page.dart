@@ -177,7 +177,8 @@ class _AuthPageState extends State<AuthPage>
             children: [
               SocialAuthButton(
                 provider: SocialProvider.google,
-                onPressed: () {},
+                onPressed: () =>
+                    context.read<AuthCubit>().signInWithGoogle(),
               ),
               const SizedBox(width: 12),
               SocialAuthButton(
