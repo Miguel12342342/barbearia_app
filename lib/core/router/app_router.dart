@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/home/presentation/pages/shell_page.dart';
 import '../../features/scheduling/domain/entities/appointment.dart';
 import '../../features/scheduling/presentation/pages/booking_confirmation_page.dart';
@@ -36,6 +37,20 @@ class _AuthRefreshStream extends ChangeNotifier {
 final _authStream =
     _AuthRefreshStream(FirebaseAuth.instance.authStateChanges());
 
+bool _onboardingChecked = false;
+bool _onboardingComplete = false;
+
+Future<void> initRouter() async {
+  _onboardingComplete = await hasSeenOnboarding();
+  _onboardingChecked = true;
+}
+
+/// Called by OnboardingPage after the user finishes — updates the in-memory
+/// flag so the router redirect stops bouncing back to /onboarding.
+void markOnboardingDone() {
+  _onboardingComplete = true;
+}
+
 final appRouter = GoRouter(
   initialLocation: '/splash',
   debugLogDiagnostics: false,
@@ -43,15 +58,32 @@ final appRouter = GoRouter(
   redirect: (context, state) {
     if (!_authStream.resolved) return '/splash';
 
+    final loc = state.matchedLocation;
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
-    final isOnAuth = state.matchedLocation == '/auth';
-    final isOnSplash = state.matchedLocation == '/splash';
 
-    if (!isLoggedIn && !isOnAuth) return '/auth';
-    if (isLoggedIn && (isOnAuth || isOnSplash)) return '/home';
+    // First-run onboarding (only for new unauthenticated users)
+    if (_onboardingChecked && !_onboardingComplete && !isLoggedIn) {
+      if (loc != '/onboarding') return '/onboarding';
+      return null;
+    }
+
+    final isOnAuth = loc == '/auth';
+    final isOnSplash = loc == '/splash';
+    final isOnOnboarding = loc == '/onboarding';
+
+    if (!isLoggedIn && !isOnAuth && !isOnOnboarding) return '/auth';
+    if (isLoggedIn && (isOnAuth || isOnSplash || isOnOnboarding)) return '/home';
     return null;
   },
   routes: [
+    GoRoute(
+      path: '/onboarding',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const OnboardingPage(),
+        transitionsBuilder: _fadeTransition,
+      ),
+    ),
     GoRoute(
       path: '/splash',
       pageBuilder: (context, state) => CustomTransitionPage(

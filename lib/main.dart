@@ -5,7 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'core/locale/app_localizations.dart';
 import 'core/locale/locale_cubit.dart';
-import 'core/router/app_router.dart';
+import 'core/router/app_router.dart' show appRouter, initRouter;
 import 'core/services/notification_service.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
@@ -22,6 +22,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
   await di.sl<NotificationService>().init();
+  await initRouter();
   runApp(const CorteEBarbaApp());
 }
 
