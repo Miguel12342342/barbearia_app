@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/locale/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/presentation/widgets/molecules/day_pill.dart';
 import '../../../../core/presentation/widgets/molecules/time_slot_button.dart';
@@ -24,17 +25,18 @@ class DateTimeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final days = List.generate(7, (i) => now.add(Duration(days: i)));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'SELECIONE O DIA',
-            style: TextStyle(
+            l10n.selectDay,
+            style: const TextStyle(
               color: AppColors.primaryGold,
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -63,11 +65,11 @@ class DateTimeSelector extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'HORÁRIOS DISPONÍVEIS',
-            style: TextStyle(
+            l10n.availableSlots,
+            style: const TextStyle(
               color: AppColors.primaryGold,
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -78,13 +80,13 @@ class DateTimeSelector extends StatelessWidget {
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildSlotsContent(),
+          child: _buildSlotsContent(l10n),
         ),
       ],
     );
   }
 
-  Widget _buildSlotsContent() {
+  Widget _buildSlotsContent(AppLocalizations l10n) {
     if (slotsStatus == BookingFormSlotsStatus.loading) {
       return const Center(
         child: Padding(
@@ -94,20 +96,20 @@ class DateTimeSelector extends StatelessWidget {
       );
     }
     if (slotsStatus == BookingFormSlotsStatus.error) {
-      return const Padding(
-        padding: EdgeInsets.all(8),
+      return Padding(
+        padding: const EdgeInsets.all(8),
         child: Text(
-          'Erro ao carregar horários.',
-          style: TextStyle(color: AppColors.error),
+          l10n.slotsError,
+          style: const TextStyle(color: AppColors.error),
         ),
       );
     }
     if (slotsStatus == BookingFormSlotsStatus.loaded && availableSlots.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(8),
+      return Padding(
+        padding: const EdgeInsets.all(8),
         child: Text(
-          'Nenhum horário disponível neste dia.',
-          style: TextStyle(color: AppColors.textMuted),
+          l10n.noSlotsAvailable,
+          style: const TextStyle(color: AppColors.textMuted),
         ),
       );
     }

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../locale/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 
 class DayPill extends StatelessWidget {
   final DateTime date;
   final bool isSelected;
   final VoidCallback onTap;
-
-  static const _weekdays = {
-    1: 'SEG', 2: 'TER', 3: 'QUA',
-    4: 'QUI', 5: 'SEX', 6: 'SÁB', 7: 'DOM',
-  };
 
   const DayPill({
     super.key,
@@ -20,9 +17,12 @@ class DayPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = _weekdays[date.weekday]!;
+    final l10n = AppLocalizations.of(context);
+    final label = DateFormat('EEE', l10n.dateLocale)
+        .format(date)
+        .toUpperCase();
     return Semantics(
-      label: '$label ${date.day}${isSelected ? ", selecionado" : ""}',
+      label: '$label ${date.day}${isSelected ? ", ${l10n.selected}" : ""}',
       button: true,
       child: GestureDetector(
         onTap: onTap,
